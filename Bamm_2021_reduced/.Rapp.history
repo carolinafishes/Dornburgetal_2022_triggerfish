@@ -1,0 +1,291 @@
+#load libraries#
+library(BAMMtools)#
+library(geiger)#
+library(coda)#
+#
+####Get External Data, change paths here to tree, MCMC, and event files#
+#adult DAR#
+adar_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_DAR/Juvenileaspectratiotree.tree')#
+adar_edata<-getEventData(adar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_dorsal_ratios.txt', type="trait",burnin=.1)#
+#juvenile DAR#
+jdar_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_DAR/Juvenileaspectratiotree.tree')#
+jdar_edata<-getEventData(jdar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_dorsal_ratios.txt', type="trait",burnin=.1)#
+#adult AAR#
+aaar_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_DAR/Juvenileaspectratiotree.tree')#
+aaar_edata<-getEventData(aaar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_anal_ratios.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#juvenile AAR#
+jaar_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_AAR/Juvenileanalaspectratiotree.tree')#
+jaar_edata<-getEventData(jaar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_anal_ratios.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#adult DIA#
+adia_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_DAR/Juvenileaspectratiotree.tree')#
+adia_edata<-getEventData(adia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_dorsal_angle.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#juvenile DIA#
+jdia_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_DIA/Juvenileincidencetree.tree')#
+jdia_edata<-getEventData(jdia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_dorsal_angle.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#adult AIA#
+aaia_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_DAR/Juvenileaspectratiotree.tree')#
+aaia_edata<-getEventData(aaia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_anal_angle.txt', type="trait",burnin=.1)#
+#juvenile AIA#
+jaia_phy<-read.tree(file='~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_AIA/Juvenileaincidencetree.tree')#
+jaia_edata<-getEventData(jaia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_anal_angle.txt', type="trait",burnin=.1)
+data<-read.delim("~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_dorsal_ratios.txt")
+names(data)
+data<-read.csv("~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_dorsal_ratios.txt")
+names(data)
+tt<-unique(data$leftchild)
+phy<-read.tree("~/Documents/Trigger Data/BAMM/BAMM_2021_redo/Juvenile_DAR/Juvenileaspectratiotree.tree")
+phy$tip.labels
+phy$tip.label
+yy<-phy$tip.label
+tt%in%yy
+tt
+which(!tt%in%yy)
+tt[which(!tt%in%yy)}
+tt[which(!tt%in%yy]
+tt[which(!tt%in%yy)]
+yy[which(!yy%in%tt)]
+phy<-read.tree("~/Documents/Triggerfish_2021/Archiving/BAMM_2021_Full/Adult_DAR/adult_dorsal_ARtree.tree")
+name.check(phy,tt)
+tt
+x<-1:23
+names(x)<-tt
+name.check(phy,x)
+X1<-name.check(phy,x)
+phy2<-drop.tip(phy, X1)
+phy2<-drop.tip(phy, X1[[2]])
+phy2
+phy2<-drop.tip(phy, X1[[1]])
+phy2
+write.tree(bamm_reduced_tree.tre)
+write.tree(phy2, "bamm_reduced_tree.tre")
+adar_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+adar_edata<-getEventData(adar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_dorsal_ratios.txt', type="trait",burnin=.1)#
+#juvenile DAR#
+jdar_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+jdar_edata<-getEventData(jdar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_dorsal_ratios.txt', type="trait",burnin=.1)#
+#adult AAR#
+aaar_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+aaar_edata<-getEventData(aaar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_anal_ratios.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#juvenile AAR#
+jaar_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+jaar_edata<-getEventData(jaar_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_anal_ratios.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#adult DIA#
+adia_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+adia_edata<-getEventData(adia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_dorsal_angle.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#juvenile DIA#
+jdia_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+jdia_edata<-getEventData(jdia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_dorsal_angle.txt', type="trait",burnin=.1)#file is correct, forgot to rename output#
+#adult AIA#
+aaia_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+aaia_edata<-getEventData(aaia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_adult_anal_angle.txt', type="trait",burnin=.1)#
+#juvenile AIA#
+jaia_phy<-read.tree(file='~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/bamm_reduced_tree copy.tre')#
+jaia_edata<-getEventData(jaia_phy, '~/Documents/Triggerfish_2021/Archiving/Bamm_2021_reduced/event_data_juvenile_anal_angle.txt', type="trait",burnin=.1)
+par(mfrow=c(2,1))#
+summary(jdar_edata)#
+plot.bammdata(jdar_edata, tau=.1, legend=T, color.interval =c(.0004, 0.025))#
+summary(adar_edata)#
+plot.bammdata(adar_edata, tau=.1, legend=T, color.interval =c(.0004, 0.025))
+par(mfrow=c(2,1))#
+summary(jdar_edata)#
+plot.bammdata(jdar_edata, tau=.1, legend=T, color.interval =c(.00037, 0.029))#
+summary(adar_edata)#
+plot.bammdata(adar_edata, tau=.1, legend=T, color.interval =c(.00037, 0.029))
+par(mfrow=c(2,1))#
+summary(jaar_edata)#
+plot.bammdata(jaar_edata, tau=.1, legend=T,color.interval =c(.0002, 0.051))#
+summary(aaar_edata)#
+plot.bammdata(aaar_edata, tau=.1, legend=T,color.interval =c(.0002, 0.051))
+plot.bammdata(jaar_edata, tau=.1, legend=T)
+plot.bammdata(aaar_edata, tau=.1, legend=T)
+par(mfrow=c(2,1))#
+summary(jaar_edata)#
+plot.bammdata(jaar_edata, tau=.1, legend=T,color.interval =c(.00026, 0.021))#
+summary(aaar_edata)#
+plot.bammdata(aaar_edata, tau=.1, legend=T,color.interval =c(.00026, 0.021))
+plot.bammdata(jdia_edata, tau=.1, legend=T)
+plot.bammdata(adia_edata, tau=.1, legend=T)
+par(mfrow=c(2,1))#
+summary(jdia_edata)#
+plot.bammdata(jdia_edata, tau=.1, legend=T,color.interval =c(.00031, 0.047))#
+summary(adia_edata)#
+plot.bammdata(adia_edata, tau=.1, legend=T,color.interval =c(.00031, 0.047))
+plot.bammdata(jaia_edata, tau=.1, legend=T)
+plot.bammdata(aaia_edata, tau=.1, legend=T)
+par(mfrow=c(2,1))#
+summary(jaia_edata)#
+plot.bammdata(jaia_edata, tau=.1, legend=T,color.interval =c(.00031, 0.039))#
+summary(aaia_edata)#
+plot.bammdata(aaia_edata, tau=.1, legend=T,color.interval =c(.00031, 0.039))
+C<-matrix(c(1,0.7,0.7,1),2,2)
+C
+L<-chol(C)
+L
+t(L)%*%L
+tau<-diag(C(1,1))
+tau<-diag(c(1,1))
+tau
+Lambda<-tau %*% t(L)
+Lambda
+Z<-rbind(rnorm(1e4),rnorm(1e4))
+X<-Lambda%*%Z
+plot(t(X))
+plot(t(Z))
+Z
+t(L)
+t(L)%*%tau
+tau%*%t(L)
+cor(t(X))
+L
+Z<-rbind(rnorm(50),rnorm(50))
+X<-Lambda%*%Z
+X
+Z
+library(toast)
+library(Toast)
+library(TOAST)
+#' Utility for Creating a RAxML-style Partition Table from Fasta Alignments#
+#'#
+#' Parse through a directory of FASTA files to assess#
+#' @author Dustin J Wcisel, \email{djwcisel@@ncsu.edu}#
+#' @author James Thomas Howard, \email{jthowar3@@ncsu.edu}#
+#' @author Jeffrey A Yoder, \email{jayoder@@ncsu.edu}#
+#' @author Alex Dornburg, \email{dornburgalex@@gmail.com}#
+#' @keywords toast missing transcript sequence DNA phylogeny fasta ortholog busco#
+#' @param aligned_dir Directory where fasta alignments can be found#
+#' @export#
+#' @return Reads through the full table found in folders ./busco_results/run_Busco* and#
+#'         returns a dataframe of the results#
+#' @import seqinr#
+#' @examples#
+#' partition_df <- SuperAlign(aligned_dir)#
+#
+#read in "MissingDataTable.R" results#
+#
+SuperAlign <- function(aligned_dir, missing_df){#
+    num_species <- length(colnames(missing_df))#
+    old_max <- 0#
+        for (i in 1:length(row.names(missing_df))){#
+        if (max(missing_df[i,], na.rm = TRUE) > 0) {#
+            new_max <- old_max + max(missing_df[i,], na.rm = TRUE) #ignores any lines were all are NA#
+            old_max <- new_max#
+        }#
+    }#
+#
+    max_align_length <- old_max#
+    header <- paste0(num_species, "\t", max_align_length)#
+    cat(file = "superalign.txt", header, "\n", append = TRUE, sep = '')#
+#
+    for (i in 1:length(colnames(missing_df))){#
+        species_to_find <- colnames(missing_df)[i] #change to i later#
+        thing_to_append <- paste0(species_to_find, "\t")#
+        for (j in 1:nrow(missing_df)){#
+            if (is.na(missing_df[j,i]) == FALSE){ #grab the sequence#
+                fasta_file <- read.fasta(paste0(aligned_dir, "/", row.names(missing_df[j,]), ".fasta"), as.string = TRUE)#
+                target_species <- match(species_to_find, names(fasta_file))#
+                seq_to_append <- fasta_file[[target_species]][[1]]#
+                thing_to_append <- paste0(thing_to_append, seq_to_append)#
+            }#
+            if (is.na(missing_df[j,i]) == TRUE){#
+                dashes <- max(missing_df[j,], na.rm = TRUE) #add in this number of dashes#
+                dashes_to_append <- strrep("-", dashes)#
+                thing_to_append <- paste0(thing_to_append, dashes_to_append)#
+            }#
+        }#
+        cat(file = "superalign.txt", thing_to_append, "\n", append = TRUE, sep = '')#
+    }#
+}
+#' Utility for Creating a Partition Table from Fasta Alignments#
+#'#
+#' Parse through a directory of FASTA files and writes "table.partition" to working directory#
+#' @author Dustin J Wcisel, \email{djwcisel@@ncsu.edu}#
+#' @author James Thomas Howard, \email{jthowar3@@ncsu.edu}#
+#' @author Jeffrey A Yoder, \email{jayoder@@ncsu.edu}#
+#' @author Alex Dornburg, \email{dornburgalex@@gmail.com}#
+#' @keywords toast missing transcript sequence DNA phylogeny fasta ortholog busco#
+#' @param aligned_dir Directory where fasta alignments can be found#
+#' @export#
+#' @return Reads through the full table found in folders ./busco_results/run_Busco* and#
+#'         returns a dataframe of the results#
+#' @examples#
+#' PartitionTable(aligned_dir, species_list, threshold)#
+PartitionTable <- function(aligned_dir, missing_df){#
+    old_max <- 1#
+    cat("#nexus\nbegin sets;\n", file = "table.partition", append = TRUE)#
+    for (i in 1:length(row.names(missing_df))){#
+        if (max(missing_df[i,], na.rm = TRUE) > 0) {#
+            new_max <- old_max + max(missing_df[i,], na.rm = TRUE) #ignores any lines were all are NA#
+            new_start <- new_max - 1#
+            cat("charset ", row.names(missing_df)[i], " = ", old_max, "-", new_start, ";\n", sep = "", file = "table.partition", append = TRUE)#
+            old_max <- new_max#
+        }#
+    }#
+    cat("end;\n", file = "table.partition", append = TRUE)#
+}
+#' Utility for Assessing Missing Data in a Set of FASTA Files#
+#'#
+#' Parse through a directory of FASTA files to assess missing data patterns between taxa and loci#
+#' @author Dustin J Wcisel, \email{djwcisel@@ncsu.edu}#
+#' @author James Thomas Howard, \email{jthowar3@@ncsu.edu}#
+#' @author Jeffrey A Yoder, \email{jayoder@@ncsu.edu}#
+#' @author Alex Dornburg, \email{dornburgalex@@gmail.com}#
+#' @keywords toast missing transcript sequence DNA phylogeny fasta ortholog busco#
+#' @param aligned_dir Directory where fasta alignments can be found#
+#' @export#
+#' @return Reads through the full table found in folders ./busco_results/run_Busco* and#
+#'         returns a dataframe of the results#
+#' @import seqinr#
+#' @examples#
+#' missing_data_df <- MissingDataTable(aligned_dir)#
+#
+MissingDataTable <- function(aligned_dir) {#
+    busco_list <- list.files(aligned_dir) #list of busco file names, path directory is required#
+    busco_ids <- gsub(".fasta", "", busco_list) #list of busco ids#
+    headers <- NULL#
+#
+    for (n in 1:length(busco_list)){#
+        each_line <- readLines(paste0(aligned_dir, "/", busco_list[n]))#
+        headers <- append(headers, each_line[grep(">", each_line)])#
+    }#
+    uni_names <- unique(headers)#
+    uni_names <- gsub(">", "", uni_names)#
+#
+    #initialize the dataframe with col.names = species, and rows = busco_ids#
+    empty_matrix <- matrix(NA, length(busco_ids), length(uni_names))#
+    final_df <- as.data.frame(empty_matrix, row.names = busco_ids)#
+    colnames(final_df) <- uni_names#
+#
+    #read in fasta files and begin populating the dataframe with length of alignments#
+    for (i in 1:length(busco_list)){#
+    fasta_file <- read.fasta(paste0(aligned_dir, "/", busco_list[i]), as.string = TRUE)#
+#
+        for (j in 1:length(names(fasta_file))){#
+            matched <- match(names(fasta_file)[j], colnames(final_df))#
+            final_df[busco_ids[i], matched] <- nchar(fasta_file[[j]][[1]])#
+        }#
+    }#
+    return(final_df)#
+}
+ad<-"~/Documents/RSV/RSVA_Alignments"''
+ad<-"~/Documents/RSV/RSVA_Alignments"
+missing<-MissingDataTable(aligned_dir = ad)
+library(ape)
+missing<-MissingDataTable(aligned_dir = ad)
+library(seqinr)
+install.packages("seqinr")
+library(seqinr)
+missing<-MissingDataTable(aligned_dir = ad)
+install.packages("toast")
+library(devtools)
+library(devtools)#
+devtools::install_github("carolinafishes/toast")
+install.packages('GOstats')
+if (!requireNamespace("BiocManager", quietly = TRUE))#
+    install.packages("BiocManager")#
+#
+BiocManager::install("GOstats")
+library(devtools)#
+devtools::install_github("carolinafishes/toast")
+library(toast)
+install.packages('ellipsis')
+library(toast)

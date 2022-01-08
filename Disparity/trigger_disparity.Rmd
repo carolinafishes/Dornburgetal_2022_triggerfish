@@ -1,0 +1,237 @@
+---
+title: "Triggerfish_disparity"
+date: "Oct 4, 2021"
+output: 
+  html_document:
+      toc: TRUE
+      theme:
+        bootswatch: lumen
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part I: Data and library load  
+  
+Reading in files and estimating disparity of single value traits using method of Cooney et al. 2017  
+  
+To begin we will read in data and then format for downstream functions
+
+```{r}
+library(phytools)
+library(geiger)
+library(msir)
+traits<-read.csv("~/Documents/Triggerfish_2021/Archiving/All_final_data.csv")
+tree<-read.tree("~/Documents/Triggerfish_2021/Archiving/Final_Inform_partitioned.phy")
+
+######################################
+##change input $trait per trait Adult
+######################################
+ADar<-traits$Adult_dorsal_incidence_angle
+
+######################################
+##change input $trait per trait juvenile
+######################################
+JDar<-traits$Juvi_dorsal_incidence_angle
+
+######################################
+#Do NOT change below this line if you are not changing the object names
+######################################
+## Adult trait 1 data prep
+ADar<-data.frame(ADar)
+row.names(ADar)<-traits$species #make species rownames
+#check
+#row.names(ADar)
+traitoverlap<-name.check(tree, ADar)
+#check
+#traitoverlap$tree_not_data
+triggerTree<-drop.tip(tree, traitoverlap$tree_not_data)
+#plot(triggerTree)
+## Juvenile trait 1 data prep
+######################################
+JDar<-data.frame(JDar)
+row.names(JDar)<-traits[,1] #make species rownames
+#check
+#row.names(JDar)
+JDar<-na.omit(JDar)
+traitoverlap<-name.check(tree, JDar)
+#check
+#traitoverlap$tree_not_data
+#drop
+triggerTreeJ<-drop.tip(tree, traitoverlap$tree_not_data)
+#plot(triggerTreeJ)
+######################################
+## get rid of missing values 
+######################################
+trait1<-na.omit(ADar)
+trait1.j<-na.omit(JDar)
+newtrait<-trait1[,1]
+newtraitj<-trait1.j[,1]
+names(newtrait)<-rownames(trait1)
+names(newtraitj)<-rownames(trait1.j)
+
+```
+
+## Part II: Core functions  
+  
+Here are the core functions used downstream, these just need to be read in. In the interest of keeping the markdown less busy, they are not displayed in the html doc. To toggle them to be displayed, change echo=FALSE, to echo=TRUE.  
+  
+```{r, echo=FALSE}
+######################################
+##core function
+######################################
+
+disparity<-function(tree,trait, startv=0, stopv=14, interval=1)
+{
+  bt<-branching.times(tree)
+  nullfit<-fastAnc(tree, trait,vars=TRUE,CI=TRUE)
+  traitvariance<-NULL
+  vals<-seq(from=startv, to=stopv, by=interval)
+  for (i in 1:length(vals)){
+    temp<-names(bt[bt>vals[i]])
+    traitvariance[i]<-var(nullfit$ace[temp])
+  }
+  traitvariance[is.na(traitvariance)] <- 0
+  scaleddis<-traitvariance/max(traitvariance)
+  return(scaleddis)
+}
+
+######################################
+##Helper functions to parse null distribution
+######################################
+
+get.median<-function(null.dis){
+  meds<-matrix(ncol=length(null.dis[1,]))
+  for (i in 1:length(null.dis[1,])){
+    median(null.dis[,i])->meds[i]
+  }
+  return(meds)
+}
+get.low<-function(null.dis){
+  lowmeds<-matrix(ncol=length(null.dis[1,]))
+  for (i in 1:length(null.dis[1,])){
+    min(null.dis[,i])->lowmeds[i]
+  }
+  return(lowmeds)
+}
+get.high<-function(null.dis){
+  highmeds<-matrix(ncol=length(null.dis[1,]))
+  for (i in 1:length(null.dis[1,])){
+    max(null.dis[,i])->highmeds[i]
+  }
+  return(highmeds)
+}
+
+######################################
+##Plotting functions 
+######################################
+
+#please note the defaults are specific to this markdown
+
+twoStageDisparity<-function(tree1=triggerTree, tree2=triggerTreeJ,trait1=trait1,trait2=trait1.j, null.dis,stopv=14, type="accumulation"){
+  yy4<-disparity(tree1,trait1[,1])
+  yy5<-disparity(tree2,trait2[,1])
+  y<-get.median(null.dis)
+  y1<-get.low(null.dis)
+  y2<-get.high(null.dis)
+  ##null
+  nulldistro<-loess.sd(seq(0:stopv), y )
+  ##adult
+  adultdistro<-loess.sd(seq(0:stopv), yy4 )
+  ##Juvenile
+  juvidistro<-loess.sd(seq(0:stopv), yy5)
+  if(type=="accumulation"){
+    ######################################
+    ##  plot the smoothed lines
+    ######################################
+   
+    #plotting adults null and juveniles
+    #null
+    plot(nulldistro$x,nulldistro$y,xlim=rev(c(3,15)), type="l")
+    lines(rev(nulldistro$x), rev(nulldistro$upper), lty=2, col="gray")
+    lines(rev(nulldistro$x), rev(nulldistro$lower), lty=2, col="gray")
+    #adult
+    lines(rev(adultdistro$x), rev(adultdistro$y), col="blue")
+    lines(rev(adultdistro$x), rev(adultdistro$upper), lty=2, col="blue")
+    lines(rev(adultdistro$x), rev(adultdistro$lower), lty=2,col="blue")
+    #juvenile
+    lines(rev(juvidistro$x), rev(juvidistro$y), col="green")
+    lines(rev(juvidistro$x), rev(juvidistro$upper), lty=2, col="green")
+    lines(rev(juvidistro$x), rev(juvidistro$lower), lty=2,col="green")
+  }else {
+    ###
+    ######################################
+    ## niche packing or filling plots
+    ######################################
+    ###
+    adulty<-(adultdistro$y/adultdistro$x)-(nulldistro$y/nulldistro$x)
+    adult_upper<-(adultdistro$upper/adultdistro$x)-(nulldistro$upper/nulldistro$x)
+    adult_lower<-(adultdistro$lower/adultdistro$x)-(nulldistro$lower/nulldistro$x)
+    juviy<-(juvidistro$y/juvidistro$x)-(nulldistro$y/nulldistro$x)
+    juviy_upper<-(juvidistro$upper/juvidistro$x)-(nulldistro$upper/nulldistro$x)
+    juviy_lower<-(juvidistro$lower/juvidistro$x)-(nulldistro$lower/nulldistro$x)
+    #plot
+    plot(seq(from=0, to=stopv, by=1),adulty,ylim=c(min(c(adult_lower,juviy_lower)),max(c(adult_upper,juviy_upper))),xlim=rev(c(3,stopv)),type="l",col="blue")
+    lines(seq(from=0, to=stopv, by=1),adult_upper, type="l",lty=2,col="blue")
+    lines(seq(from=0, to=stopv, by=1),adult_lower, type="l",lty=2,col="blue")
+
+    lines(seq(0:stopv),juviy_upper, type="l",lty=2,col="green")
+    lines(seq(0:stopv),juviy, type="l",col="green")
+    lines(seq(0:stopv),juviy_lower, type="l",lty=2,col="green")
+    abline(h=0)
+    
+  }  
+}
+
+```
+
+## Part III: Null distribution  
+
+This is a quick loop to generate a null distribution using the above functions  
+
+```{r}
+
+######################################
+##get the null distribution
+######################################
+
+##Change '1000' in two places below to the number of sims you want
+
+null.dis<-matrix(nrow=100,ncol=15)
+for (i in 1:100){
+  x <- as.data.frame(fastBM(triggerTree))
+  #row.names(ADar)
+  disparity(triggerTree,x[,1])->null.dis[i,]
+}
+
+```
+
+## Part IV: empirical disparity
+
+```{r}
+######################################
+## get empirical disparity 
+######################################
+
+#this is part of a function above but placing it here for verification
+#yy4<-disparity(triggerTree,trait1[,1])
+#yy5<-disparity(triggerTreeJ,trait1.j[,1])
+
+######################################
+## Plotting
+######################################
+
+#First plot the accumulation of total disparity over time
+twoStageDisparity(tree1=triggerTree, tree2=triggerTreeJ,trait1=trait1,trait2=trait1.j,stopv=14, null.dis, type="accumulation")
+
+#then plot how morphospaces expand or fill
+twoStageDisparity(tree1=triggerTree, tree2=triggerTreeJ,trait1=trait1,trait2=trait1.j,stopv=14, null.dis, type="other")
+
+#to get dtt plot 
+dttOut<-dtt(triggerTreeJ, JDar, nsim=1000, CI=0.90)
+dttOut<-dtt(triggerTree, ADar, nsim=1000, CI=0.90)
+
+```
+
+Repeat the above logic for any traits or loop through the trait names to generate a series of plots, etc. 
